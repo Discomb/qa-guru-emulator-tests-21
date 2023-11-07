@@ -1,7 +1,6 @@
 package guru.qa.drivers;
 
 import com.codeborne.selenide.WebDriverProvider;
-import guru.qa.config.AuthConfig;
 import guru.qa.config.MobileConfig;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
@@ -21,7 +20,6 @@ import static io.appium.java_client.remote.MobilePlatform.ANDROID;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class LocalDriver implements WebDriverProvider {
-//    protected static final AuthConfig authConfig = ConfigFactory.create(AuthConfig.class, System.getProperties());
     protected static final MobileConfig mobileConfig = ConfigFactory.create(MobileConfig.class, System.getProperties());
 
     @Nonnull
@@ -31,9 +29,9 @@ public class LocalDriver implements WebDriverProvider {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setAutomationName(ANDROID_UIAUTOMATOR2)
                 .setPlatformName(ANDROID)
-                .setPlatformVersion("11.0")
-                .setDeviceName("Pixel 4 API 30")
-                .setApp(getAppPath())
+                .setPlatformVersion(mobileConfig.getOS())
+                .setDeviceName(mobileConfig.getDevice())
+                .setApp(getAppPath(mobileConfig.getApp()))
                 .setAppPackage("org.wikipedia.alpha")
                 .setAppActivity("org.wikipedia.main.MainActivity");
 
@@ -48,9 +46,7 @@ public class LocalDriver implements WebDriverProvider {
         }
     }
 
-    private String getAppPath() {
-
-        String appVersion = "app-alpha-universal-release.apk";
+    private String getAppPath(String appVersion) {
 
         String appUrl = "https://github.com/wikimedia/apps-android-wikipedia" +
                 "/releases/download/latest/" + appVersion;

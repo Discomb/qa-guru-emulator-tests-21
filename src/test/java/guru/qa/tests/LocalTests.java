@@ -3,17 +3,18 @@ package guru.qa.tests;
 import com.codeborne.selenide.CollectionCondition;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static io.appium.java_client.AppiumBy.accessibilityId;
 import static io.appium.java_client.AppiumBy.id;
 import static io.qameta.allure.Allure.step;
 
-@Tag("android")
-public class AndroidTests extends TestBase {
+@Tag("emulator")
+public class LocalTests extends TestBase {
 
     @Test
     @Description("Проверка непустой поисковой выдачи")
@@ -39,16 +40,12 @@ public class AndroidTests extends TestBase {
                 $$(id("org.wikipedia.alpha:id/page_list_item_title")).shouldHave(CollectionCondition.sizeGreaterThan(0)));
         step("Открытие первого элемента из списка", () ->
                 $$(id("org.wikipedia.alpha:id/page_list_item_title")).first().click());
-        step("Проверка элементов на странице с ошибкой", () -> {
-            $(id("org.wikipedia.alpha:id/view_wiki_error_icon")).should(exist);
-            $(id("org.wikipedia.alpha:id/view_wiki_error_text")).shouldHave(text("An error occurred"));
-            $(id("org.wikipedia.alpha:id/view_wiki_error_button")).should(exist);
-            $(id("org.wikipedia.alpha:id/view_wiki_error_button")).shouldHave(text("GO BACK"));
+        step("Проверка заголовка открытой страницы", () -> {
+            $(byXpath("//android.view.View[@text=\"France\"]")).shouldBe(visible);
         });
     }
 
     @Test
-    @Tag("local")
     @Description("Проверка слайдера")
     void onboardingTest() {
         step("Проверка первого экрана", () -> {

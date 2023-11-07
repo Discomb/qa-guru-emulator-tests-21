@@ -10,15 +10,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import static com.codeborne.selenide.Selenide.closeWebDriver;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 public class TestBase {
 
+    public static final String deviceHost = System.getProperty("deviceHost");
+
     @BeforeAll
     static void beforeAll() {
-//        Configuration.browser = BrowserstackDriver.class.getName();
-        Configuration.browser = LocalDriver.class.getName();
+        if (deviceHost.equals("browserstack")) {
+            Configuration.browser = BrowserstackDriver.class.getName();
+        } else if (deviceHost.equals("emulator")) {
+            Configuration.browser = LocalDriver.class.getName();
+        }
+
         Configuration.browserSize = null;
         Configuration.timeout = 30000;
     }
@@ -31,16 +36,14 @@ public class TestBase {
 
     @AfterEach
     void afterEach() {
-
-//      todo  Работает только с локальным драйвером
-        Attach.screenshotAs("Last screenshot");
         Attach.pageSource();
-
-//      todo Убрать для локал
-//        String sessionId = Selenide.sessionId().toString();
-        closeWebDriver();
-
-//      todo Убрать для локал
-//        Attach.addVideo(sessionId);
+        if (deviceHost.equals("browserstack")) {
+            String sessionId = sessionId().toString();
+            closeWebDriver();
+            Attach.addVideo(sessionId);
+        } else if (deviceHost.equals("emulator")) {
+            Attach.screenshotAs("Last screenshot");
+            closeWebDriver();
+        }
     }
 }
